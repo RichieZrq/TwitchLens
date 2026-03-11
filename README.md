@@ -58,6 +58,8 @@ MySQL     Twitch API
 - Docker Desktop
 - A Twitch developer account with a registered application
 
+### 0. Clone the repository to your local machine
+
 ### 1. Get Twitch API Credentials
 1. Go to [dev.twitch.tv/console](https://dev.twitch.tv/console)
 2. Create a new application, then copy your **Client ID** and **Client Secret**
@@ -79,7 +81,7 @@ docker-compose up -d
 
 ### 4. Run the Application
 ```bash
-# Load environment variables (PowerShell)
+# Load environment variables
 Get-Content .env | ForEach-Object { if ($_ -match '^(.+)=(.+)$') { [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2]) } }
 
 # Start the app
@@ -88,3 +90,21 @@ Get-Content .env | ForEach-Object { if ($_ -match '^(.+)=(.+)$') { [System.Envir
 
 ### 5. Open in Browser
 Navigate to `http://localhost:8080`
+
+## AWS Deployment
+
+The application is deployed on AWS using:
+- **AWS ECR** for Docker image storage
+- **AWS App Runner** for container hosting
+- **AWS RDS (MySQL)** for the production database
+
+To redeploy after changes:
+```bash
+./gradlew build -x test
+docker build -t twitchlens .
+docker tag twitchlens:latest <ecr-uri>/twitchlens:latest
+docker push <ecr-uri>/twitchlens:latest
+```
+App Runner detects the new image and redeploys automatically.
+
+---
